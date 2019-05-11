@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
 const muralSchema = new mongoose.Schema({
-	artwork_title: String,
+	title: String,
 	artist: String,
 	image: String,
-	art_description: String,
-	year_installed: Number,
-	affiliation: String,
-	street_address: String,
-	zipcode: Number,
+	description: String,
 	location_description: String,
-	latitude: Number,
-	longitude: Number
+	year: Number,
+	affiliation: String,
+	address: String,
+	zipcode: Number,
+	lat: Number,
+	lng: Number
 })
 
 const Mural = mongoose.model('Mural', muralSchema);

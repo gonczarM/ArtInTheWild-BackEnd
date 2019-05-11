@@ -25,10 +25,13 @@ app.use(cors({
 	origin: 'http://localhost:3000',
 	credentials: true,
 	optionsSuccessStatus: 200 
-}
+}))
 
 //controllers
-
+const usersController = require('./controllers/users')
+app.use('/users', usersController)
+const muralsController = require('./controllers/murals')
+app.use('/murals', muralsController)
 
 //listener
 app.listen(PORT, () => {
