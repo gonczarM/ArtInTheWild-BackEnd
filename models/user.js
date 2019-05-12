@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Mural = require('./mural')
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
 	username: String,
-	passwrod: String,
+	password: String,
 	murals:[{
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Mural'

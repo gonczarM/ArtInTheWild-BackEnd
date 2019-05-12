@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const superagent = require('superagent')
 const User = require('../models/user')
+const Mural = require('../models/mural')
 const bcrypt = require('bcryptjs')
 
 router.post('/', async (req, res, next) => {
@@ -9,13 +10,13 @@ router.post('/', async (req, res, next) => {
 	const passwordHash = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 	const userDbEntry = {}
 	userDbEntry.username = req.body.username
-	userDbEntry.password - passwordHash
+	userDbEntry.password = passwordHash
 	try{
 		const foundUsername = await User.findOne({'username': req.body.username})
 		if(foundUsername){
 			res.json({
-				status: 201,
-				data: foundUsername
+				status: 401,
+				user: foundUsername
 			})
 		}
 		else{
@@ -24,9 +25,9 @@ router.post('/', async (req, res, next) => {
 			req.session.UserId = createdUser._id
 			req.session.username = req.body.username
 			res.json({
-				status: 200
-				user: userDbEntry
-				session: req.session
+				status: 200,
+				session: req.session,
+				user: createdUser
 			})
 		}
 	}
@@ -39,14 +40,116 @@ router.post('/', async (req, res, next) => {
 })
 
 router.get('/user/:id', async (req, res, next) => {
-		
+		try{
+			const foundUser = await User.findById(req.params.id).populate('murals')
+			res.json({
+				stauts: 200,
+				user: foundUser,
+				murals: foundUser.posts,
+			})
+		}
+		catch(error){
+		res.status(400).json({
+			status: 400,
+			error: error
+		})
+	}	
 })
 
+// not needed just for testing
+router.get('/', async (req, res, next) => {
+	try{
+		const allUsers = await User.find({})
+		res.json({
+			status: 200,
+			users: allUsers
+		})
+	}
+	catch(error){
+		res.status(400).json({
+			status: 400,
+			error: error
+		})
+	}
+})
 
-// GET (/user/:id) -- show page for user displays murals a/o images uploaded by user
-// GET (/user/logout) -- logs user out, kills session
-// POST (/user/register) -- creates user, starts session
-// POST (/user/login) -- login user, start sesssion
+router.get('/logout', (req, res, next) => {
+	req.session.destroy((err) => {
+		if(err){
+			res.status(400).json({
+				status: 400,
+				error: error
+			})
+		}
+		else{
+			res.json({
+				status: 200
+			})
+		}
+	})
+})
+
+router.post('/user/login', async (req, res, next) => {
+	try{
+		const foundUser = await User.findOne({'username': req.body.username})
+		console.log(foundUser);
+		console.log(req.body.username);
+		if(foundUser){
+			if(bcrypt.compareSync(req.body.password, foundUser.password) === true){
+				req.session.loggedIn = true;
+				req.session.userId = foundUser._id;
+				req.session.username = req.body.username;
+				res.json({
+					status: 200,
+					session: req.session,
+					user: foundUser
+				})
+			}
+			else{
+				res.json({
+					status: 401,
+					pass: req.body.password
+				})
+			}
+		}
+		else{
+			res.json({
+				status: 402,
+				user: req.body.username
+			})
+		}
+	}
+	catch(error){
+		res.status(400).json({
+			status: 400,
+			error: next(error)
+		})
+	}		
+})
+
+router.delete('/user/:id', async (req, res, next) => {
+	try{
+		const deletedUser = await User.findByIdAndDelete(req.params.id)
+		const deletedUsersMurals = await Mural.deleteMany({
+			_id: {
+				$in: deletedUser.murals
+			}
+		})
+		req.session.destroy()
+		res.json({
+			status: 200,
+			user: deletedUser,
+			murals: deletedUsersMurals
+		}) 
+	}
+	catch(error){
+		res.json({
+			status: 400,
+			error: next(error)
+		})
+	}
+})
+
 // DELETE (/user/:id) -- delete specific user and associated posts
 
 module.exports = router;
