@@ -1,90 +1,84 @@
 const express = require('express')
 const router = express.Router();
-const superagent = require('superagent')
+const Mural = require('../models/mural')
+
+router.post('/', async (req, res, next) => {
+	try{
+		const createdMural = await Mural.create(req.body)
+		res.json({
+      status: 200,
+      data: createdMural
+    });
+  } 
+	catch(error){
+	res.status(400).json({
+      status: 400,
+      error: error
+    })
+  }	
+})
 
 router.get('/home', async (req, res, next) => {
 	try{
-		const allMurals = await superagent
-		.get('https://data.cityofchicago.org/resource/we8h-apcf.json')
-		const arrOfMurals = JSON.parse(allMurals.text)
-		const filteredArr = arrOfMurals.map(mural => {
-	    return {
-		    title: mural.artwork_title,
-		    artist: mural.artist_credit,
-		    locationDescription: mural.location_description,
-		    address: mural.street_address,
-		    zipcode: mural.zip
-    	}
-    })
-		res.status(200).json({
-      status: 200,
-      data: filteredArr
-    });	
-	}
-	catch(err){
-		res.status(400).json({
-      status: 400,
-      error: error
-    })
-	}		
-})
-
-router.get('/home/:searchTerm', async (req, res, next) => {
-	try{
-		const foundMurals = await superagent
-		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json?${req.params.searchTerm}`)
-		const arrOfMurals = await JSON.parse(foundMurals.text)
-		const filteredArr = arrOfMurals.map(mural => {
-			return {
-				title: mural.artwork_title,
-				artist: mural.artist_credit,
-				locationDescription: mural.location_description,
-				address: mural.street_address,
-				zipcode: mural.zip
-			}
+		const allMurals = await Mural.find()
+		res.json({
+			status: 200,
+			data: allMurals
 		})
-		res.status(200).json({ 
-      status: 200,
-      data: filteredArr
-    });
 	}
 	catch(error){
 		res.status(400).json({
-      status: 400,
-      error: error
-    })
-	}		
+			status: 400,
+			error: error
+		})
+	}
 })
 
-router.get('/mural/:searchTerm', async (req, res, next) => {
+router.get('/mural/:id', async (req, res, next) => {
 	try{
-		const foundMural = await superagent
-		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json?${req.params.searchTerm}`)
-		const arrOfMural = await JSON.parse(foundMural.text)
-		const filteredArr = arrOfMural.map(mural => {
-			return {
-				title: mural.artwork_title,
-		    artist: mural.artist_credit,
-		    description: mural.description_of_artwork,
-		    locationDescription: mural.location_description,
-		    year: mural.year_installed,
-		    affiliation: mural.affiliated_or_commissioning, 
-		    address: mural.street_address,
-		    lat: mural.latitude,
-		    lng: mural.longitude,
-		    zipcode: mural.zip
-			}
+		const foundMural = await Mural.findById(req.params.id)
+		res.json({
+			status: 200,
+			data: foundMural
 		})
-		res.status(200).json({ 
-      status: 200,
-      data: filteredArr
-    });
 	}
 	catch(error){
 		res.status(400).json({
+			status: 400,
+			error: error
+		})
+	}	
+})
+
+router.put('/mural/:id', async (req, res, next) => {
+	try{
+		const updatedMural = await Mural.findByIdAndUpdate(req.params.id, req.body, {new: true});
+		res.json({
+			status: 200,
+			data: updatedMural
+		})
+	}
+	catch(error){
+	res.status(400).json({
       status: 400,
       error: error
     })
+  }			
+})
+
+router.delete('/mural/:id', async (req, res, next) => {
+	try{
+		const deletedMural = await Mural.findByIdAndDelete(req.params.id)
+		res.json({
+			status: 200,
+			data: deletedMural
+		})
+	}
+	catch(error){
+		res.status(400).json({
+			status: 400,
+			error: error
+		})
 	}		
 })
 

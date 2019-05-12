@@ -32,6 +32,8 @@ const usersController = require('./controllers/users')
 app.use('/users', usersController)
 const muralsController = require('./controllers/murals')
 app.use('/murals', muralsController)
+const cityOfChicagoController = require('./controllers/cityOfChicago')
+app.use('/cityOfChicago', cityOfChicagoController)
 
 //listener
 app.listen(PORT, () => {
