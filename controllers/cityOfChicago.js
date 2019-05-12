@@ -21,16 +21,17 @@ router.get('/', async (req, res, next) => {
 		    	zipcode: mural.zip
 			}
 		})
+		console.log(filteredArr[0]);
 		res.status(200).json({ 
-      status: 200,
-      data: filteredArr
-    });
+      		status: 200,
+      		murals: filteredArr
+    	});
 	}
 	catch(error){
 		res.status(400).json({
-      status: 400,
-      error: error
-    })
+      		status: 400,
+      		error: error
+    	})
 	}		
 })
 
@@ -49,15 +50,15 @@ router.get('/home/:searchTerm', async (req, res, next) => {
 			}
 		})
 		res.status(200).json({ 
-      status: 200,
-      data: filteredArr
-    });
+      		status: 200,
+      		murals: filteredArr
+    	});
 	}
 	catch(error){
 		res.status(400).json({
-      status: 400,
-      error: error
-    })
+      		status: 400,
+      		error: error
+    	})
 	}		
 })
 
