@@ -1,13 +1,18 @@
 const express = require('express')
 const router = express.Router();
 const Mural = require('../models/mural')
+const User = require('../models/user')
 
 router.post('/', async (req, res, next) => {
 	try{
+		const foundUser = await User.findById(req.session.userId)
 		const createdMural = await Mural.create(req.body)
+		foundUser.murals.push(createdMural)
+		foundUser.save()
 		res.json({
       status: 200,
-      data: createdMural
+      mural: createdMural,
+      user: foundUser
     });
   } 
 	catch(error){
@@ -23,7 +28,7 @@ router.get('/home', async (req, res, next) => {
 		const allMurals = await Mural.find()
 		res.json({
 			status: 200,
-			data: allMurals
+			murals: allMurals
 		})
 	}
 	catch(error){
@@ -36,10 +41,13 @@ router.get('/home', async (req, res, next) => {
 
 router.get('/mural/:id', async (req, res, next) => {
 	try{
+		const foundUser = await User.findOne({'murals': req.params.id})
+		.populate({path: 'murals', match: {_id: req.params.id}})
 		const foundMural = await Mural.findById(req.params.id)
 		res.json({
 			status: 200,
-			data: foundMural
+			mural: foundMural,
+			user: foundUser
 		})
 	}
 	catch(error){

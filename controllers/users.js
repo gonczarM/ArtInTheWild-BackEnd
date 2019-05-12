@@ -57,21 +57,21 @@ router.get('/user/:id', async (req, res, next) => {
 })
 
 // not needed just for testing
-router.get('/', async (req, res, next) => {
-	try{
-		const allUsers = await User.find({})
-		res.json({
-			status: 200,
-			users: allUsers
-		})
-	}
-	catch(error){
-		res.status(400).json({
-			status: 400,
-			error: error
-		})
-	}
-})
+// router.get('/', async (req, res, next) => {
+// 	try{
+// 		const allUsers = await User.find({})
+// 		res.json({
+// 			status: 200,
+// 			users: allUsers
+// 		})
+// 	}
+// 	catch(error){
+// 		res.status(400).json({
+// 			status: 400,
+// 			error: error
+// 		})
+// 	}
+// })
 
 router.get('/logout', (req, res, next) => {
 	req.session.destroy((err) => {
@@ -149,7 +149,5 @@ router.delete('/user/:id', async (req, res, next) => {
 		})
 	}
 })
-
-// DELETE (/user/:id) -- delete specific user and associated posts
 
 module.exports = router;
