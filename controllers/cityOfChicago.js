@@ -21,24 +21,23 @@ router.get('/', async (req, res, next) => {
 		    	zipcode: mural.zip
 			}
 		})
-		console.log(filteredArr[0]);
 		res.status(200).json({ 
-      		status: 200,
-      		murals: filteredArr
-    	});
+      status: 200,
+      murals: createdMurals
+    });
 	}
 	catch(error){
 		res.status(400).json({
-      		status: 400,
-      		error: error
-    	})
+      status: 400,
+      error: next(error)
+    })
 	}		
 })
 
-router.get('/home/:searchTerm', async (req, res, next) => {
+router.get('/:prop/:value', async (req, res, next) => {
 	try{
 		const foundMurals = await superagent
-		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json?${req.params.searchTerm}`)
+		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json?${req.params.prop}=${req.params.value}`)
 		const arrOfMurals = await JSON.parse(foundMurals.text)
 		const filteredArr = arrOfMurals.map(mural => {
 			return {

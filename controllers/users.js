@@ -21,7 +21,6 @@ router.post('/', async (req, res, next) => {
 		}
 		else{
 			const createdUser = await User.create(userDbEntry)
-			console.log(createdUser);
 			req.session.loggedIn = true
 			req.session.UserId = createdUser._id
 			req.session.username = req.body.username
@@ -93,8 +92,6 @@ router.get('/logout', (req, res, next) => {
 router.post('/user/login', async (req, res, next) => {
 	try{
 		const foundUser = await User.findOne({'username': req.body.username})
-		console.log(foundUser);
-		console.log(req.body.username);
 		if(foundUser){
 			if(bcrypt.compareSync(req.body.password, foundUser.password) === true){
 				req.session.loggedIn = true;
