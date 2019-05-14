@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-const connectionString = 'mongodb://localhost/art-in-the-wild6';
-
-mongoose.connect(connectionString, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false
