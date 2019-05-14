@@ -4,73 +4,83 @@ const Mural = require('../models/mural')
 const User = require('../models/user')
 const superagent = require('superagent')
 
-// router.post('/', async (req, res, next) => {
-// 	try{
-// 		// const foundUser = await User.findById(req.session.userId)
-// 		const createdMural = await Mural.create(req.body)
-// 		console.log(req.body);
-// 		// foundUser.murals.push(createdMural)
-// 		// foundUser.save()
-// 		res.json({
-//       status: 200,
-//       mural: createdMural,
-//       // user: foundUser
-//     });
-//   } 
-// 	catch(error){
-// 	res.status(400).json({
-//       status: 400,
-//       error: next(error)
-//     })
-//   }	
-// })
-
-// route to add third party api into my db
 router.post('/', async (req, res, next) => {
 	try{
-		const foundMurals = await superagent
-		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json`)
-		const arrOfMurals = await JSON.parse(foundMurals.text)
-		const filteredArr = arrOfMurals.map(mural => {
-			return {
-				title: mural.artwork_title,
-		    artist: mural.artist_credit,
-		    description: mural.description_of_artwork,
-		    locationDescription: mural.location_description,
-		    year: mural.year_installed,
-		    affiliation: mural.affiliated_or_commissioning, 
-		    address: mural.street_address,
-		    lat: mural.latitude,
-		    lng: mural.longitude,
-		    zipcode: mural.zip
-			}
-		})
-		const createdMurals = await Mural.create(filteredArr)
-		res.status(200).json({ 
+		// const foundUser = await User.findById(req.session.userId)
+		const createdMural = await Mural.create(req.body)
+		console.log(req.body);
+		// foundUser.murals.push(createdMural)
+		// foundUser.save()
+		res.json({
       status: 200,
-      murals: createdMurals
+      mural: createdMural,
+      // user: foundUser
     });
-	}
+  } 
 	catch(error){
-		res.status(400).json({
+	res.status(400).json({
       status: 400,
       error: next(error)
     })
-	}		
+  }	
 })
 
-router.get('/search/:searchTerm', async (req, res, next) => {
+// route to add third party api into my db
+// router.post('/', async (req, res, next) => {
+// 	try{
+// 		const foundMurals = await superagent
+// 		.get(`https://data.cityofchicago.org/resource/we8h-apcf.json`)
+// 		const arrOfMurals = await JSON.parse(foundMurals.text)
+// 		const filteredArr = arrOfMurals.map(mural => {
+// 			return {
+// 				title: mural.artwork_title,
+// 		    artist: mural.artist_credit,
+// 		    description: mural.description_of_artwork,
+// 		    locationDescription: mural.location_description,
+// 		    year: mural.year_installed,
+// 		    affiliation: mural.affiliated_or_commissioning, 
+// 		    address: mural.street_address,
+// 		    lat: mural.latitude,
+// 		    lng: mural.longitude,
+// 		    zipcode: mural.zip
+// 			}
+// 		})
+// 		const createdMurals = await Mural.create(filteredArr)
+// 		res.status(200).json({ 
+//       status: 200,
+//       murals: createdMurals
+//     });
+// 	}
+// 	catch(error){
+// 		res.status(400).json({
+//       status: 400,
+//       error: next(error)
+//     })
+// 	}		
+// })
+
+router.get('/:searchProperty/:searchTerm', async (req, res, next) => {
+	let searchedMurals = ''
 	try{
-		const searchedMurals = await Mural.find({'zipcode': req.params.searchTerm})
+		if(req.params.searchProperty == 'Artist'){
+			searchedMurals = await Mural.find({'artist': req.params.searchTerm})
+		}
+		if(req.params.searchProperty == 'Zipcode'){
+			searchedMurals = await Mural.find({'zipcode': req.params.searchTerm})
+		}		
+		if(req.params.searchProperty == 'Affiliation'){
+			searchedMurals = await Mural.find({'affiliation': req.params.searchTerm})
+		}
 		res.json({
 			status: 200,
 			murals: searchedMurals
 		})
 	}
 	catch(error){
+		next(error)
 		res.status(400).json({
 			status: 400,	
-			error: next(error)
+			error: error
 		})
 	}
 })
