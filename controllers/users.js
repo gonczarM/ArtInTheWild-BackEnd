@@ -16,7 +16,8 @@ router.post('/', async (req, res, next) => {
 		if(foundUsername){
 			res.json({
 				status: 401,
-				user: foundUsername
+				user: foundUsername,
+				session: req.session
 			})
 		}
 		else{
@@ -41,11 +42,12 @@ router.post('/', async (req, res, next) => {
 
 router.get('/user/:id', async (req, res, next) => {
 		try{
-			const foundUser = await User.findById(req.params.id).populate('murals')
+			const foundUser = await User.findOne({'murals': req.params.id})
+			.populate({path: 'murals', match: {_id: req.params.id}});
 			res.json({
 				stauts: 200,
 				user: foundUser,
-				murals: foundUser.posts,
+				mural: foundUser.murals[0]
 			})
 		}
 		catch(error){

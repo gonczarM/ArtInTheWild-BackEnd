@@ -6,15 +6,14 @@ const superagent = require('superagent')
 
 router.post('/', async (req, res, next) => {
 	try{
-		// const foundUser = await User.findById(req.session.userId)
+		const foundUser = await User.findById(req.session.userId)
 		const createdMural = await Mural.create(req.body)
-		console.log(req.body);
-		// foundUser.murals.push(createdMural)
-		// foundUser.save()
+		foundUser.murals.push(createdMural)
+		foundUser.save()
 		res.json({
       status: 200,
       mural: createdMural,
-      // user: foundUser
+      user: foundUser
     });
   } 
 	catch(error){

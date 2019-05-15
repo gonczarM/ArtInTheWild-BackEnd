@@ -23,7 +23,7 @@ app.use(session({
 }));
 app.use(bodyParser.json());
 app.use(cors({
-	origin: 'http://localhost:3000',
+	origin: process.env.REACT_CLIENT_URL,
 	credentials: true,
 	optionsSuccessStatus: 200 
 }))
