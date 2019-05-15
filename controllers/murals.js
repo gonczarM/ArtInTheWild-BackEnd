@@ -100,25 +100,6 @@ router.get('/home', async (req, res, next) => {
 	}
 })
 
-router.get('/mural/:id', async (req, res, next) => {
-	try{
-		const foundUser = await User.findOne({'murals': req.params.id})
-		.populate({path: 'murals', match: {_id: req.params.id}})
-		const foundMural = await Mural.findById(req.params.id)
-		res.json({
-			status: 200,
-			mural: foundMural,
-			user: foundUser
-		})
-	}
-	catch(error){
-		res.status(400).json({
-			status: 400,
-			error: next(error)
-		})
-	}	
-})
-
 router.put('/mural/:id', async (req, res, next) => {
 	try{
 		const updatedMural = await Mural.findByIdAndUpdate(req.params.id, req.body, {new: true});

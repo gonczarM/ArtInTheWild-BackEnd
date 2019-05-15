@@ -12,16 +12,18 @@ const PORT = process.env.PORT
 require('./db/db')
 
 //middleware
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: false}));
+// app.use(express.static('public'));
+// app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(methodOverride('_method'));
+// app.use(methodOverride('_method'));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false, 
   saveUninitialized: false
 }));
-app.use(bodyParser.json());
+
+// app.use(bodyParser.json());
+
 app.use(cors({
 	origin: process.env.REACT_CLIENT_URL,
 	credentials: true,
