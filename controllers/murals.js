@@ -3,6 +3,22 @@ const router = express.Router();
 const Mural = require('../models/mural')
 const User = require('../models/user')
 const superagent = require('superagent')
+const cloudinary 	 = require('cloudinary')
+
+router.post('/image-upload', (req, res) => {
+	console.log(req.files);
+	const values = Object.values(req.files)
+	console.log(values);
+  const promises = values.map(image => cloudinary.uploader.upload(image.path))
+  console.log(promises);
+  Promise
+    .all(promises)
+    .then(results => res.json(results))
+})
+
+// const path = Object.values(Object.values(req.files)[0])[0].path
+//   cloudinary.uploader.upload(path)
+//     .then(image => res.json([image]))
 
 router.post('/', async (req, res, next) => {
 	try{

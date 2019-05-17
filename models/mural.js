@@ -10,7 +10,7 @@ const muralSchema = new mongoose.Schema({
 		default: ""
 	},
 	image: {
-		type: String,
+		Type: String,
 		default: ""
 	},
 	description: {

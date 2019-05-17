@@ -43,37 +43,38 @@ router.post('/', async (req, res, next) => {
 router.get('/user/:id', async (req, res, next) => {
 		try{
 			const foundUser = await User.findOne({'murals': req.params.id})
-			.populate({path: 'murals', match: {_id: req.params.id}});
+			.populate('murals');
+			console.log(foundUser);
 			res.json({
 				stauts: 200,
-				user: foundUser,
-				mural: foundUser.murals[0]
+				user: foundUser
 			})
 		}
 		catch(error){
-		res.status(400).json({
-			status: 400,
-			error: error
-		})
-	}	
+			console.log(error);
+			res.status(400).json({
+				status: 400,
+				error: error
+			})
+	  }
 })
 
 // not needed just for testing
-router.get('/', async (req, res, next) => {
-	try{
-		const allUsers = await User.find({})
-		res.json({
-			status: 200,
-			users: allUsers
-		})
-	}
-	catch(error){
-		res.status(400).json({
-			status: 400,
-			error: error
-		})
-	}
-})
+// router.get('/', async (req, res, next) => {
+// 	try{
+// 		const allUsers = await User.find({})
+// 		res.json({
+// 			status: 200,
+// 			users: allUsers
+// 		})
+// 	}
+// 	catch(error){
+// 		res.status(400).json({
+// 			status: 400,
+// 			error: error
+// 		})
+// 	}
+// })
 
 router.get('/logout', (req, res, next) => {
 	req.session.destroy((err) => {
